@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from sqlalchemy import create_engine, Column, String, Integer, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker
 from datetime import datetime, timezone
@@ -121,11 +122,13 @@ def chat(req: ChatRequest):
 
 
 @app.get("/traces")
-def get_traces(category: Optional[str] = None):
+def get_traces(category: Optional[str] = None, search: Optional[str] = None):
     db = SessionLocal()
     q = db.query(Trace).order_by(Trace.timestamp.desc())
     if category and category in CATEGORIES:
         q = q.filter(Trace.category == category)
+    if search:
+        q = q.filter(Trace.user_message.ilike(f"%{search}%"))
     traces = q.all()
     db.close()
     return [
@@ -159,3 +162,18 @@ def analytics():
         for c in CATEGORIES
     }
     return {"total": total, "avg_response_time_ms": avg_ms, "categories": categories}
+
+
+@app.get("/traces/export")
+def export_traces():
+    import csv, io
+    db = SessionLocal()
+    traces = db.query(Trace).order_by(Trace.timestamp.desc()).all()
+    db.close()
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(["id", "timestamp", "user_message", "bot_response", "category", "response_time_ms"])
+    for t in traces:
+        writer.writerow([t.id, t.timestamp.isoformat(), t.user_message, t.bot_response, t.category, t.response_time_ms])
+    buf.seek(0)
+    return StreamingResponse(buf, media_type="text/csv", headers={"Content-Disposition": "attachment; filename=traces.csv"})

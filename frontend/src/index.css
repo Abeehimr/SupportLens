@@ -28,9 +28,13 @@ h2 { margin-bottom: 1.2rem; color: #e6edf3; }
 .stat-label { font-size: 0.8rem; color: #8b949e; margin-top: 0.3rem; }
 
 /* Filter */
-.filter-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; }
+.filter-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; flex-wrap: wrap; }
 .filter-row label { font-size: 0.9rem; color: #8b949e; }
 .filter-row select { padding: 0.4rem 0.8rem; border: 1px solid #30363d; border-radius: 6px; background: #161b22; color: #e6edf3; font-size: 0.9rem; cursor: pointer; }
+.search-input { flex: 1; min-width: 180px; padding: 0.4rem 0.8rem; border: 1px solid #30363d; border-radius: 6px; background: #161b22; color: #e6edf3; font-size: 0.9rem; }
+.search-input::placeholder { color: #484f58; }
+.export-btn { margin-left: auto; padding: 0.4rem 1rem; background: #238636; color: #fff; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: background 0.2s; }
+.export-btn:hover { background: #2ea043; }
 
 /* Table */
 table { width: 100%; border-collapse: collapse; background: #161b22; border-radius: 8px; overflow: hidden; border: 1px solid #30363d; }
