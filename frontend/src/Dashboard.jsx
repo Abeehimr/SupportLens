@@ -9,13 +9,17 @@ export default function Dashboard() {
   const [traces, setTraces] = useState([])
   const [analytics, setAnalytics] = useState(null)
   const [filter, setFilter] = useState('')
+  const [search, setSearch] = useState('')
   const [expanded, setExpanded] = useState(null)
 
   useEffect(() => {
-    const params = filter ? `?category=${encodeURIComponent(filter)}` : ''
-    axios.get(`${API}/traces${params}`).then(r => setTraces(r.data))
+    const params = new URLSearchParams()
+    if (filter) params.set('category', filter)
+    if (search) params.set('search', search)
+    const qs = params.toString() ? `?${params.toString()}` : ''
+    axios.get(`${API}/traces${qs}`).then(r => setTraces(r.data))
     axios.get(`${API}/analytics`).then(r => setAnalytics(r.data))
-  }, [filter])
+  }, [filter, search])
 
   return (
     <div>
@@ -41,11 +45,19 @@ export default function Dashboard() {
       )}
 
       <div className="filter-row">
-        <label>Filter by category:</label>
+        <label>Filter:</label>
         <select value={filter} onChange={e => setFilter(e.target.value)}>
-          <option value="">All</option>
+          <option value="">All Categories</option>
           {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
+        <input
+          className="search-input"
+          type="text"
+          placeholder="Search messages..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
+        <a href={`${API}/traces/export`} className="export-btn" download>Export CSV</a>
       </div>
 
       <table>
