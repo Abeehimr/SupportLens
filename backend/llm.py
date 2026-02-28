@@ -22,6 +22,7 @@ def _get_client():
     if not GROQ_API_KEY:
         return None
     from groq import Groq
+
     _groq_client = Groq(api_key=GROQ_API_KEY)
     return _groq_client
 
@@ -70,7 +71,8 @@ def get_chat_response(user_message: str) -> str:
         return completion.choices[0].message.content.strip()
     except Exception as exc:
         logger.error(
-            "LLM chat request failed: %s", exc,
+            "LLM chat request failed: %s",
+            exc,
             extra={
                 "event": "llm_failure",
                 "error_type": type(exc).__name__,
@@ -92,14 +94,18 @@ def classify(user_message: str, bot_response: str) -> str:
             model=MODEL,
             messages=[
                 {"role": "system", "content": CLASSIFY_PROMPT},
-                {"role": "user", "content": f"User: {user_message}\nBot: {bot_response}"},
+                {
+                    "role": "user",
+                    "content": f"User: {user_message}\nBot: {bot_response}",
+                },
             ],
             max_tokens=20,
         )
         raw = resp.choices[0].message.content.strip()
         if raw not in CATEGORIES:
             logger.warning(
-                "LLM returned unexpected category %r", raw,
+                "LLM returned unexpected category %r",
+                raw,
                 extra={
                     "event": "invalid_classification",
                     "llm_output": raw,
@@ -110,7 +116,8 @@ def classify(user_message: str, bot_response: str) -> str:
         return raw
     except Exception as exc:
         logger.error(
-            "LLM classify request failed: %s", exc,
+            "LLM classify request failed: %s",
+            exc,
             extra={
                 "event": "llm_failure",
                 "error_type": type(exc).__name__,

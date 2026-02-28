@@ -18,9 +18,19 @@ class JSONFormatter(logging.Formatter):
         }
 
         # Attach any extra fields set via `extra={...}` on the log call.
-        for key in ("event", "method", "path", "status_code", "duration_ms",
-                     "request_id", "error_type", "error_message",
-                     "user_message", "llm_output", "normalized_category"):
+        for key in (
+            "event",
+            "method",
+            "path",
+            "status_code",
+            "duration_ms",
+            "request_id",
+            "error_type",
+            "error_message",
+            "user_message",
+            "llm_output",
+            "normalized_category",
+        ):
             value = getattr(record, key, None)
             if value is not None:
                 log_entry[key] = value
