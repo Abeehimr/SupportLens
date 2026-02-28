@@ -125,15 +125,29 @@ curl -X POST http://localhost:8000/chat \
 ```
 SupportLens/
 ├── backend/
-│   ├── main.py              # FastAPI app (all endpoints + models)
+│   ├── main.py              # FastAPI app entrypoint (middleware, startup)
+│   ├── db.py                # Database engine, models, session factory
+│   ├── llm.py               # Groq LLM client, chat & classification
+│   ├── routes.py            # API route handlers
 │   ├── requirements.txt     # Python dependencies
 │   └── seed.py              # Seed script (20 sample traces)
 ├── frontend/
 │   ├── src/
-│   │   ├── main.jsx         # App entry + routing
-│   │   ├── Chat.jsx         # Chat page component
-│   │   ├── Dashboard.jsx    # Dashboard page component
-│   │   └── index.css        # Global styles (dark theme)
+│   │   ├── main.jsx         # App entry point
+│   │   ├── App.jsx          # Layout + routing
+│   │   ├── api.js           # Centralized API client
+│   │   ├── constants.js     # Shared constants (categories)
+│   │   ├── index.css        # Global styles (dark theme)
+│   │   ├── pages/
+│   │   │   ├── Chat.jsx     # Chat page
+│   │   │   └── Dashboard.jsx# Dashboard page
+│   │   └── components/
+│   │       ├── Navbar.jsx       # Navigation bar
+│   │       ├── ChatInput.jsx    # Chat input form
+│   │       ├── ChatResult.jsx   # Chat response display
+│   │       ├── StatsGrid.jsx    # Analytics stat cards
+│   │       ├── CategoryFilter.jsx # Category dropdown filter
+│   │       └── TracesTable.jsx  # Traces table with expandable rows
 │   ├── package.json
 │   └── vite.config.js
 ├── .gitignore

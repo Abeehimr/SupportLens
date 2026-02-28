@@ -2,11 +2,11 @@
 import sys, os
 sys.path.insert(0, os.path.dirname(__file__))
 
-from main import SessionLocal, Trace, Base, engine
+from db import SessionLocal, Trace, init_db
 from datetime import datetime, timezone, timedelta
 import uuid
 
-Base.metadata.create_all(bind=engine)
+init_db()
 db = SessionLocal()
 
 seeds = [
