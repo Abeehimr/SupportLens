@@ -2,6 +2,7 @@
 
 import os
 import uuid
+from contextlib import contextmanager
 from datetime import datetime, timezone
 
 from sqlalchemy import Column, DateTime, Integer, String, create_engine
@@ -12,7 +13,7 @@ DATABASE_URL = os.environ.get(
     "postgresql+psycopg://postgres:postgres@localhost:5432/supportlens",
 )
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()
 
@@ -34,6 +35,16 @@ class Trace(Base):
     category = Column(String, nullable=False)
     timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     response_time_ms = Column(Integer, nullable=False)
+
+
+@contextmanager
+def get_db():
+    """Yield a SQLAlchemy session and guarantee it is closed afterward."""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 def init_db() -> None:

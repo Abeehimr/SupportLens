@@ -1,13 +1,23 @@
-"""Insert 20 seed traces distributed across all categories."""
-import sys, os
+"""Insert 20 seed traces distributed across all categories (idempotent)."""
+import sys
+import os
+import uuid
+from datetime import datetime, timezone, timedelta
+
 sys.path.insert(0, os.path.dirname(__file__))
 
-from db import SessionLocal, Trace, init_db
-from datetime import datetime, timezone, timedelta
-import uuid
+from db import SessionLocal, Trace, init_db  # noqa: E402
 
 init_db()
+
 db = SessionLocal()
+
+# ── Idempotency: skip if traces already exist ────────────────────────────────
+existing = db.query(Trace).count()
+if existing > 0:
+    print(f"Database already has {existing} traces — skipping seed.")
+    db.close()
+    sys.exit(0)
 
 seeds = [
     ("I was charged twice for my subscription", "Let me look into the duplicate charge on your account.", "Billing", 210),
