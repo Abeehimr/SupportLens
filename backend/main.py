@@ -1,5 +1,7 @@
 """SupportLens — FastAPI application entrypoint."""
 
+import time
+
 from dotenv import load_dotenv
 
 load_dotenv()  # Load .env before any other imports read os.environ
@@ -9,6 +11,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from db import init_db
 from routes import router
+
+START_TIME = time.time()
 
 app = FastAPI(title="SupportLens")
 
