@@ -4,7 +4,7 @@ A minimal AI-powered customer support analytics tool. Users chat with an LLM-bas
 
 ![Stack](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white)
 ![Stack](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=black)
-![Stack](https://img.shields.io/badge/SQLite-003B57?style=flat&logo=sqlite&logoColor=white)
+![Stack](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white)
 ![Stack](https://img.shields.io/badge/Groq-000?style=flat&logoColor=white)
 
 ## Features
@@ -21,7 +21,7 @@ A minimal AI-powered customer support analytics tool. Users chat with an LLM-bas
 
 | Layer    | Technology                        |
 |----------|-----------------------------------|
-| Backend  | Python, FastAPI, SQLAlchemy, SQLite |
+| Backend  | Python, FastAPI, SQLAlchemy, PostgreSQL |
 | Frontend | React (Vite), Axios, React Router |
 | LLM      | Groq API (Llama 3.1 8B Instant)  |
 
@@ -31,6 +31,7 @@ A minimal AI-powered customer support analytics tool. Users chat with an LLM-bas
 
 - Python 3.11+
 - Node.js 18+
+- PostgreSQL 14+ (or Docker)
 - A [Groq API key](https://console.groq.com/) (free tier)
 
 ### 1. Clone the repository
@@ -40,7 +41,27 @@ git clone https://github.com/Abeehimr/SupportLens.git
 cd SupportLens
 ```
 
-### 2. Backend
+### 2. PostgreSQL Setup
+
+**Option A — Docker (recommended):**
+
+```bash
+docker run -d --name supportlens-pg \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=supportlens \
+  -p 5432:5432 \
+  postgres:16-alpine
+```
+
+**Option B — Local PostgreSQL:**
+
+Create a database named `supportlens`. The default connection string is:
+`postgresql+psycopg://postgres:postgres@localhost:5432/supportlens`
+
+Override with the `DATABASE_URL` environment variable if needed.
+
+### 3. Backend
 
 ```bash
 cd backend

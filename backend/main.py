@@ -42,8 +42,8 @@ def classify(user_message: str, bot_response: str) -> str:
 
 
 # --- DB Setup ---
-DATABASE_URL = "sqlite:///./supportlens.db"
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql+psycopg://postgres:postgres@localhost:5432/supportlens")
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()
 
