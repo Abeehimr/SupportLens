@@ -69,7 +69,15 @@ def get_chat_response(user_message: str) -> str:
         )
         return completion.choices[0].message.content.strip()
     except Exception as exc:
-        logger.error("LLM chat request failed: %s", exc, exc_info=True)
+        logger.error(
+            "LLM chat request failed: %s", exc,
+            extra={
+                "event": "llm_failure",
+                "error_type": type(exc).__name__,
+                "error_message": str(exc),
+                "user_message": user_message,
+            },
+        )
         return FALLBACK_RESPONSE
 
 
@@ -90,9 +98,24 @@ def classify(user_message: str, bot_response: str) -> str:
         )
         raw = resp.choices[0].message.content.strip()
         if raw not in CATEGORIES:
-            logger.warning("LLM returned unexpected category %r — falling back to General Inquiry", raw)
+            logger.warning(
+                "LLM returned unexpected category %r", raw,
+                extra={
+                    "event": "invalid_classification",
+                    "llm_output": raw,
+                    "normalized_category": "General Inquiry",
+                },
+            )
             return "General Inquiry"
         return raw
     except Exception as exc:
-        logger.error("LLM classify request failed: %s", exc, exc_info=True)
+        logger.error(
+            "LLM classify request failed: %s", exc,
+            extra={
+                "event": "llm_failure",
+                "error_type": type(exc).__name__,
+                "error_message": str(exc),
+                "user_message": user_message,
+            },
+        )
         return "LLM_UNAVAILABLE"
