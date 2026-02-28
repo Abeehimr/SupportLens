@@ -59,7 +59,14 @@ done
 # ── 1. Health endpoint ──────────────────────────────────────────────────────
 log_section "1" "Health endpoint"
 HEALTH=$(curl -sf "$BACKEND_URL/health")
-check_json_field "App status" "$HEALTH" "['status']" "healthy"
+APP_STATUS=$(echo "$HEALTH" | python3 -c "import sys,json; print(json.load(sys.stdin)['status'])" 2>/dev/null || echo "__PARSE_ERROR__")
+# Accept both "healthy" (LLM key present) and "degraded" (no LLM key, fallback mode).
+# Only "unhealthy" (DB down) is a real failure.
+if [ "$APP_STATUS" = "healthy" ] || [ "$APP_STATUS" = "degraded" ]; then
+    log_pass "App status = $APP_STATUS"
+else
+    log_fail "App status -- expected healthy or degraded, got $APP_STATUS"
+fi
 check_json_field "DB status"  "$HEALTH" "['database']['status']" "up"
 
 # ── 2. Get baseline analytics ──────────────────────────────────────────────
