@@ -4,7 +4,7 @@ A minimal AI-powered customer support analytics tool. Users chat with an LLM-bas
 
 ![Stack](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white)
 ![Stack](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=black)
-![Stack](https://img.shields.io/badge/SQLite-003B57?style=flat&logo=sqlite&logoColor=white)
+![Stack](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white)
 ![Stack](https://img.shields.io/badge/Groq-000?style=flat&logoColor=white)
 
 ## Features
@@ -21,7 +21,7 @@ A minimal AI-powered customer support analytics tool. Users chat with an LLM-bas
 
 | Layer    | Technology                        |
 |----------|-----------------------------------|
-| Backend  | Python, FastAPI, SQLAlchemy, SQLite |
+| Backend  | Python, FastAPI, SQLAlchemy, PostgreSQL |
 | Frontend | React (Vite), Axios, React Router |
 | LLM      | Groq API (Llama 3.1 8B Instant)  |
 
@@ -31,6 +31,7 @@ A minimal AI-powered customer support analytics tool. Users chat with an LLM-bas
 
 - Python 3.11+
 - Node.js 18+
+- PostgreSQL 14+ (or Docker)
 - A [Groq API key](https://console.groq.com/) (free tier)
 
 ### 1. Clone the repository
@@ -40,7 +41,27 @@ git clone https://github.com/Abeehimr/SupportLens.git
 cd SupportLens
 ```
 
-### 2. Backend
+### 2. PostgreSQL Setup
+
+**Option A — Docker (recommended):**
+
+```bash
+docker run -d --name supportlens-pg \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=supportlens \
+  -p 5432:5432 \
+  postgres:16-alpine
+```
+
+**Option B — Local PostgreSQL:**
+
+Create a database named `supportlens`. The default connection string is:
+`postgresql+psycopg://postgres:postgres@localhost:5432/supportlens`
+
+Override with the `DATABASE_URL` environment variable if needed.
+
+### 3. Backend
 
 ```bash
 cd backend
@@ -104,15 +125,29 @@ curl -X POST http://localhost:8000/chat \
 ```
 SupportLens/
 ├── backend/
-│   ├── main.py              # FastAPI app (all endpoints + models)
+│   ├── main.py              # FastAPI app entrypoint (middleware, startup)
+│   ├── db.py                # Database engine, models, session factory
+│   ├── llm.py               # Groq LLM client, chat & classification
+│   ├── routes.py            # API route handlers
 │   ├── requirements.txt     # Python dependencies
 │   └── seed.py              # Seed script (20 sample traces)
 ├── frontend/
 │   ├── src/
-│   │   ├── main.jsx         # App entry + routing
-│   │   ├── Chat.jsx         # Chat page component
-│   │   ├── Dashboard.jsx    # Dashboard page component
-│   │   └── index.css        # Global styles (dark theme)
+│   │   ├── main.jsx         # App entry point
+│   │   ├── App.jsx          # Layout + routing
+│   │   ├── api.js           # Centralized API client
+│   │   ├── constants.js     # Shared constants (categories)
+│   │   ├── index.css        # Global styles (dark theme)
+│   │   ├── pages/
+│   │   │   ├── Chat.jsx     # Chat page
+│   │   │   └── Dashboard.jsx# Dashboard page
+│   │   └── components/
+│   │       ├── Navbar.jsx       # Navigation bar
+│   │       ├── ChatInput.jsx    # Chat input form
+│   │       ├── ChatResult.jsx   # Chat response display
+│   │       ├── StatsGrid.jsx    # Analytics stat cards
+│   │       ├── CategoryFilter.jsx # Category dropdown filter
+│   │       └── TracesTable.jsx  # Traces table with expandable rows
 │   ├── package.json
 │   └── vite.config.js
 ├── .gitignore
